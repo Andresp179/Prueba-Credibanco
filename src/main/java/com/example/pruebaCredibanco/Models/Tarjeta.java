@@ -15,32 +15,37 @@ import jakarta.persistence.Table;
 public class Tarjeta implements Serializable {
 
 	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @Column(name = "numero_tarjeta", unique = true, nullable = false, length = 16)
-    private String numeroTarjeta;
+	@Column(name = "numero_tarjeta", unique = true, nullable = false, length = 16)
+	private String numeroTarjeta;
 
-    @Column(name = "nombre_titular", nullable = false)
-    private String nombreTitular;
+	@Column(name = "nombre_titular", nullable = false)
+	private String nombreTitular;
 
-    @Column(name = "fecha_vencimiento", nullable = false)
-    private LocalDate fechaVencimiento;
+	@Column(name = "fecha_vencimiento", nullable = false)
+	private LocalDate fechaVencimiento;
 
-  	@Column(name = "saldo", nullable = false)
-    private double saldo;
+	@Column(name = "saldo", nullable = false)
+	private double saldo;
 
-    @Column(name = "activa", nullable = false)
-    private boolean activa;
+	@Column(name = "activa", nullable = false)
+	private boolean activa;
 
-    @Column(name = "bloqueada", nullable = false)
-    private boolean bloqueada;
+	@Column(name = "bloqueada", nullable = false)
+	private boolean bloqueada;
+
+	public Tarjeta() {
+		super();
+		
+	}
     
-    public Tarjeta() {
-  		super();
-  		// TODO Auto-generated constructor stub
-  	}
-
+	 public Tarjeta(String productId, String titular) {
+	        this.numeroTarjeta = generarNumeroTarjeta(productId);
+	        this.nombreTitular = titular;
+	        this.fechaVencimiento = calcularFechaVencimiento();
+	    }
 	public Tarjeta(Long id, String numeroTarjeta, String nombreTitular, LocalDate fechaVencimiento, double saldo,
 			boolean activa, boolean bloqueada) {
 		super();
@@ -108,5 +113,14 @@ public class Tarjeta implements Serializable {
 	public void setBloqueada(boolean bloqueada) {
 		this.bloqueada = bloqueada;
 	}
-	
+
+	private String generarNumeroTarjeta(String productId) {
+		String numeroAleatorio = String.format("%010d", (long) (Math.random() * 1_000_000_0000L));
+		return productId + numeroAleatorio;
+	}
+
+	private LocalDate calcularFechaVencimiento() {
+		return LocalDate.now().plusYears(3);
+	}
+
 }
