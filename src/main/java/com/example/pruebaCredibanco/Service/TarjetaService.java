@@ -1,5 +1,6 @@
 package com.example.pruebaCredibanco.Service;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,13 @@ public class TarjetaService {
 		return false;
 	}
 
+	public Tarjeta realizarCompra(Long id, double monto, LocalDate fechaTransaccion) {
+		Tarjeta tarjeta = tarjetaRepository.findById(id)
+				.orElseThrow(() -> new IllegalStateException("Tarjeta no encontrada"));
+		tarjeta.realizarCompra(monto, fechaTransaccion);
+		return tarjetaRepository.save(tarjeta);
+	}
+
 	public boolean recargarSaldo(String numeroTarjeta, double monto) { // Recargar saldo
 		Optional<Tarjeta> tarjetaOpt = tarjetaRepository.findByNumeroTarjeta(numeroTarjeta);
 		if (tarjetaOpt.isPresent()) {
@@ -51,6 +59,12 @@ public class TarjetaService {
 			return true;
 		}
 		return false;
+	}
+
+	public double consultarSaldo(String numeroTarjeta) {
+		Tarjeta tarjeta = tarjetaRepository.findByNumeroTarjeta(numeroTarjeta)
+				.orElseThrow(() -> new IllegalStateException("Tarjeta no encontrada"));
+		return tarjeta.getSaldo();
 	}
 
 }

@@ -11,7 +11,7 @@ import com.example.pruebaCredibanco.Models.Tarjeta;
 import com.example.pruebaCredibanco.Service.TarjetaService;
 
 @RestController
-@RequestMapping("/tarjeta")
+@RequestMapping("/card")
 public class TarjetaController {
 
 	@Autowired
@@ -51,6 +51,10 @@ public class TarjetaController {
 		} else {
 			return ResponseEntity.badRequest().body("No se pudo recargar el saldo.");
 		}
+	}
+	@PostMapping("/saldo")
+	public double consultarSaldoPorNumero(@RequestParam String numeroTarjeta) {		
+		return tarjetaService.consultarSaldo(numeroTarjeta);
 	}
 
 }
