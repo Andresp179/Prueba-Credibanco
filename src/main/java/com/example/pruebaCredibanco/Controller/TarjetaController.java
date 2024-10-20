@@ -1,8 +1,12 @@
 package com.example.pruebaCredibanco.Controller;
 
+import java.math.BigDecimal;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -42,6 +46,15 @@ public class TarjetaController {
 			return ResponseEntity.badRequest().body("No se pudo bloquear la tarjeta.");
 		}
 	}
+	@PostMapping("/desbloqueando")
+	public ResponseEntity<String> desbloquearTarjeta(@RequestParam String numeroTarjeta) {		
+		Boolean bloqueado = tarjetaService.desbloquearTarjeta(numeroTarjeta);
+	  if(bloqueado) {
+		  return ResponseEntity.ok("Desbloqueada correctamente");
+	  } else {
+		  return ResponseEntity.badRequest().body("No se pudo desbloquear");
+	  }
+	}
 
 	@PostMapping("/recargaSaldo")
 	public ResponseEntity<String> recargarSaldo(@RequestParam String numeroTarjeta, @RequestParam double monto) {
@@ -52,9 +65,23 @@ public class TarjetaController {
 			return ResponseEntity.badRequest().body("No se pudo recargar el saldo.");
 		}
 	}
+
 	@PostMapping("/saldo")
-	public double consultarSaldoPorNumero(@RequestParam String numeroTarjeta) {		
+	public double consultarSaldoPorNumero(@RequestParam String numeroTarjeta) {
 		return tarjetaService.consultarSaldo(numeroTarjeta);
 	}
+	
+	@PostMapping("/realizar")
+    public ResponseEntity<String> realizarCompra(@RequestParam String numeroTarjeta,
+                                                 @RequestParam Double montoCompra) {
+        try {
+            tarjetaService.realizarCompra(numeroTarjeta, montoCompra);
+            return ResponseEntity.ok("Compra realizada con éxito");
+        } catch (IllegalStateException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+
 
 }

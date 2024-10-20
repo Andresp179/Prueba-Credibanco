@@ -1,5 +1,6 @@
 package com.example.pruebaCredibanco.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Optional;
 
@@ -66,5 +67,62 @@ public class TarjetaService {
 				.orElseThrow(() -> new IllegalStateException("Tarjeta no encontrada"));
 		return tarjeta.getSaldo();
 	}
+
+	public Boolean desbloquearTarjeta(String numeroTarjeta) {
+		Optional<Tarjeta> tarjetaOpt = tarjetaRepository.findByNumeroTarjeta(numeroTarjeta);
+		if (tarjetaOpt.isPresent()) {
+			Tarjeta tarjeta = tarjetaOpt.get();
+			tarjeta.setBloqueada(false);
+			tarjetaRepository.save(tarjeta);
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean validarTarjetaParaCompra(String numeroTarjeta, Double montoCompra) {
+        Tarjeta tarjeta = tarjetaRepository.findByNumeroTarjeta(numeroTarjeta)
+            .orElseThrow(() -> new IllegalArgumentException("Tarjeta no encontrada"));
+
+        // Verificar si la tarjeta está bloqueada
+        if (tarjeta.isBloqueada()) {
+            throw new IllegalStateException("La tarjeta está bloqueada");
+        }
+
+        // Verificar si la tarjeta está activada
+        if (!tarjeta.isActiva()) {
+            throw new IllegalStateException("La tarjeta no está activada");
+        }
+
+        // Verificar la fecha de vencimiento
+        LocalDate hoy = LocalDate.now();
+        if (hoy.isAfter(LocalDate.parse(tarjeta.getFechaVencimiento()))) {
+            throw new IllegalStateException("La tarjeta está vencida");
+        }
+
+        // Verificar el saldo suficiente        
+        int comparisonResult = Double.compare(tarjeta.getSaldo(),montoCompra);
+        if (comparisonResult < 0) {
+            throw new IllegalStateException("Saldo insuficiente");
+        }
+
+        return true; // Si todas las validaciones pasan, la tarjeta está lista para compras
+    }
+	 public void realizarCompra(String numeroTarjeta, Double montoCompra) {
+	        // Validar que la tarjeta esté lista para la compra
+	        validarTarjetaParaCompra(numeroTarjeta, montoCompra);
+
+	        Tarjeta tarjeta = tarjetaRepository.findByNumeroTarjeta(numeroTarjeta)
+	            .orElseThrow(() -> new IllegalArgumentException("Tarjeta no encontrada"));
+
+	        // Realizar la compra deduciendo el saldo
+	        int result=Double.compare(tarjeta.getSaldo(),montoCompra);
+	        tarjeta.setSaldo(result);
+
+	        // Guardar los cambios en la base de datos
+	        tarjetaRepository.save(tarjeta);
+
+}
+	
+	
 
 }
