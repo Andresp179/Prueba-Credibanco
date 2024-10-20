@@ -40,15 +40,15 @@ public class TarjetaService {
 		return tarjetaRepository.save(tarjeta);
 	}
 
-	public boolean recargarSaldo(String numeroTarjeta, double monto) { // Recargar saldo
+	public String recargarSaldo(String numeroTarjeta, double monto) { // Recargar saldo
 		Optional<Tarjeta> tarjetaOpt = tarjetaRepository.findByNumeroTarjeta(numeroTarjeta);
 		if (tarjetaOpt.isPresent()) {
 			Tarjeta tarjeta = tarjetaOpt.get();
 			tarjeta.setSaldo(tarjeta.getSaldo() + monto);
 			tarjetaRepository.save(tarjeta);
-			return true;
+			return "Número de tarjeta: " + tarjeta.getNumeroTarjeta() + ", Saldo actualizado: " + tarjeta.getSaldo();
 		}
-		return false;
+		return "Tarjeta no encontrada.";
 	}
 
 	public boolean bloquearTarjeta(String numeroTarjeta) { // Bloquear tarjeta
@@ -62,10 +62,11 @@ public class TarjetaService {
 		return false;
 	}
 
-	public double consultarSaldo(String numeroTarjeta) {
+	public String consultarSaldo(String numeroTarjeta) {
 		Tarjeta tarjeta = tarjetaRepository.findByNumeroTarjeta(numeroTarjeta)
 				.orElseThrow(() -> new IllegalStateException("Tarjeta no encontrada"));
-		return tarjeta.getSaldo();
+		String saldo= String.valueOf(tarjeta.getSaldo());
+		return "Numero de tarjeta: "+tarjeta.getNumeroTarjeta()+"\n"+"Saldo: "+saldo;
 	}
 
 	public Boolean desbloquearTarjeta(String numeroTarjeta) {

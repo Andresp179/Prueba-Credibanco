@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -16,76 +18,53 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "transacciones")
 public class Transaccion implements Serializable {
+	@Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+	private double valor;
+    private LocalDateTime fecha;
+    
+    @Enumerated(EnumType.STRING)
+    private EstadoTransaccion estado;
 
-	 @Id
-	    @GeneratedValue(strategy = GenerationType.IDENTITY)
-	    private Long id;
+    // Getters y Setters
 
-	    @ManyToOne(fetch = FetchType.LAZY)
-	    @JoinColumn(name = "tarjeta_id", nullable = false)
-	    private Tarjeta tarjeta;
+    public EstadoTransaccion getEstado() {
+		return estado;
+	}
+	public void setEstado(EstadoTransaccion estado) {
+		this.estado = estado;
+	}
 
-	    @Column(name = "monto", nullable = false)
-	    private double monto;
-
-	    @Column(name = "fecha_transaccion", nullable = false)
-	    private LocalDateTime fechaTransaccion;
-
-	    public Long getId() {
-			return id;
-		}
-
-		public void setId(Long id) {
-			this.id = id;
-		}
-
-		public Tarjeta getTarjeta() {
-			return tarjeta;
-		}
-
-		public void setTarjeta(Tarjeta tarjeta) {
-			this.tarjeta = tarjeta;
-		}
-
-		public double getMonto() {
-			return monto;
-		}
-
-		public void setMonto(double monto) {
-			this.monto = monto;
-		}
-
-		public LocalDateTime getFechaTransaccion() {
-			return fechaTransaccion;
-		}
-
-		public void setFechaTransaccion(LocalDateTime fechaTransaccion) {
-			this.fechaTransaccion = fechaTransaccion;
-		}
-
-		public boolean isAnulada() {
-			return anulada;
-		}
-
-		public void setAnulada(boolean anulada) {
-			this.anulada = anulada;
-		}
-
-		public Transaccion() {
-			super();
-			// TODO Auto-generated constructor stub
-		}
-
-		public Transaccion(Long id, Tarjeta tarjeta, double monto, LocalDateTime fechaTransaccion, boolean anulada) {
-			super();
-			this.id = id;
-			this.tarjeta = tarjeta;
-			this.monto = monto;
-			this.fechaTransaccion = fechaTransaccion;
-			this.anulada = anulada;
-		}
-
-		@Column(name = "anulada", nullable = false)
-	    private boolean anulada;
-
+	public enum EstadoTransaccion {
+        REALIZADA,
+        ANULADA
+    }
+    
+    public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
+	}
+	public double getValor() {
+		return valor;
+	}
+	public void setValor(double valor) {
+		this.valor = valor;
+	}
+	public LocalDateTime getFecha() {
+		return fecha;
+	}
+	public void setFecha(LocalDateTime fecha) {
+		this.fecha = fecha;
+	}
+	
+	public Transaccion(Long id, double valor, LocalDateTime fecha) {
+		super();
+		this.id = id;
+		this.valor = valor;
+		this.fecha = fecha;
+	}
+	
 }

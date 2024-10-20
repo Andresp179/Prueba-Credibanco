@@ -3,6 +3,7 @@ package com.example.pruebaCredibanco.Controller;
 import java.math.BigDecimal;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -58,16 +59,15 @@ public class TarjetaController {
 
 	@PostMapping("/recargaSaldo")
 	public ResponseEntity<String> recargarSaldo(@RequestParam String numeroTarjeta, @RequestParam double monto) {
-		boolean recargada = tarjetaService.recargarSaldo(numeroTarjeta, monto);
-		if (recargada) {
-			return ResponseEntity.ok("Saldo recargado correctamente.");
-		} else {
-			return ResponseEntity.badRequest().body("No se pudo recargar el saldo.");
+		String recargada = tarjetaService.recargarSaldo(numeroTarjeta, monto);
+		if (recargada.contains("Tarjeta no encontrada..")) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(recargada);
 		}
+		return ResponseEntity.ok(recargada);
 	}
 
 	@PostMapping("/saldo")
-	public double consultarSaldoPorNumero(@RequestParam String numeroTarjeta) {
+	public String consultarSaldoPorNumero(@RequestParam String numeroTarjeta) {
 		return tarjetaService.consultarSaldo(numeroTarjeta);
 	}
 	
